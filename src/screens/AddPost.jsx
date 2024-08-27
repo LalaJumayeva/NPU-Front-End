@@ -247,7 +247,7 @@ const AddPost = () => {
                     <img
                         src={bunny}
                         alt="bunny"
-                        className="absolute inset-0 w-full h-full object-cover rounded-2xl px-4"
+                        className="w-[350px] h-auto absolute bottom-2 right-5 z-0"
                     />
                 </div>
             </div>
