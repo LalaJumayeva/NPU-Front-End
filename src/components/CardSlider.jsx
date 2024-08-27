@@ -1,57 +1,32 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
-import { feedBackground, heroBackground, persona } from "../assets";
 import { FcLikePlaceholder } from "react-icons/fc";
 
-// Sample data for the slider
-const sliderData = [
-    {
-        id: 1,
-        name: "Anya Petrova",
-        date: "Today, Aug. 17, 11:06",
-        text: "Lorem ipsum dolor sit amet, aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum ...read more",
-        images: [heroBackground, heroBackground],
-        nameTag: "GearMoprh",
-        category: "Capes & Cloths",
-        likes: 35
-    },
-    {
-        id: 2,
-        name: "John Doe",
-        date: "Yesterday, Aug. 16, 09:23",
-        text: "Another example text. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-        images: [heroBackground, heroBackground],
-        nameTag: "AnotherName",
-        category: "Accessories",
-        likes: 42
-    },
-    {
-        id: 3,
-        name: "Jane Smith",
-        date: "Today, Aug. 17, 10:15",
-        text: "Here is some more text. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum.",
-        images: [heroBackground, feedBackground],
-        nameTag: "SampleName",
-        category: "Gadgets",
-        likes: 29
-    },
-    {
-        id: 4,
-        name: "Alice Johnson",
-        date: "Today, Aug. 17, 11:45",
-        text: "More sample text for another post. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-        images: [heroBackground, heroBackground],
-        nameTag: "YetAnotherName",
-        category: "Toys",
-        likes: 58
-    }
-];
 
 const CardSlider = () => {
+    const [posts, setPosts] = useState([]);
+
+    useEffect(() => {
+        const fetchPosts = async () => {
+            try {
+                const response = await fetch('/api/Post');
+                const data = await response.json();
+                setPosts(data.slice(-10))
+            } catch (error) {
+                console.error("Error fetching posts:", error);
+            }
+        };
+
+        fetchPosts();
+    }, []);
+
+    const shortenText = (text, limit) => {
+        return text.length > limit ? text.substring(0, limit) + "..." : text;
+    };
+
     const responsive = {
         superLargeDesktop: {
-          // the naming can be any, depends on you.
           breakpoint: { max: 4000, min: 3000 },
           items: 5
         },
@@ -85,25 +60,25 @@ const CardSlider = () => {
         itemClass="carousel-item-padding-40-px"
         className="z-10"
         >
-            {sliderData.map((slide) => (
-                <div key={slide.id} className="flex justify-center items-center md:my-8 xl:mx-16">
+            {posts.map((post) => (
+                <div key={post._id} className="flex justify-center items-center md:my-8 xl:mx-16">
                     <div className="bg-white rounded-xl px-4 py-4 w-[90%] sm:w-[70%] lg:w-[80%] h-auto mx-2">
                         <div className="flex items-center mb-4">
                             <img
                                 className="w-10 h-10 md:w-16 md:h-16 rounded-full object-cover mr-4"
-                                src={persona}
+                                src={post.createdBy.avatar}
                                 alt="profile-pic"
                             />
                             <div className="flex flex-col">
-                                <p className="text-base sm:text-lg md:text-xl font-bold">{slide.name}</p>
-                                <p className="text-xs md:text-sm text-gray-500">{slide.date}</p>
+                                <p className="text-base sm:text-lg md:text-xl font-bold">{post.createdBy.username}</p>
+                                <p className="text-xs md:text-sm text-gray-500">{new Date(post.createdAt).toLocaleString()}</p>
                             </div>
                         </div>
                         <p className="text-xs sm:text-sm md:text-base text-gray-700 mb-4 flex-grow">
-                            {slide.text}
+                            {shortenText(post.description, 220)}
                         </p>
                         <div className="flex flex-row justify-center items-center space-x-2">
-                            {slide.images.map((img, imgIndex) => (
+                            {post.images.map((img, imgIndex) => (
                                 <img
                                     key={imgIndex}
                                     className="object-cover rounded-xl w-[50%] h-[150px] sm:h-[180px] md:h-[200px]"
@@ -115,16 +90,16 @@ const CardSlider = () => {
                         <div className="flex justify-between items-start mt-4">
                             <div className="flex items-start flex-col sm:flex-row pr-4">
                                 <p className="bg-custom-yellow px-2 py-1 rounded-md text-xs md:text-sm mr-3 mb-2 sm:mb-0">
-                                    Name: {slide.nameTag}
+                                    Name: {post.name}
                                 </p>
                                 <p className="bg-custom-yellow px-2 py-1 rounded-md text-xs md:text-sm">
-                                    Category: {slide.category}
+                                    Category: {post.category.name}
                                 </p>
                             </div>
                             <div className="flex items-center">
                                 <FcLikePlaceholder size={20} />
                                 <p className="text-xs md:text-sm font-semibold ml-1">
-                                    {slide.likes} likes
+                                    {post.likes} likes
                                 </p>
                             </div>
                         </div>

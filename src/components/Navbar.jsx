@@ -1,20 +1,57 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import * as images from "../assets";
 import { CgMenuRightAlt } from "react-icons/cg";
 import { VscChromeClose } from "react-icons/vsc";
 import { CgProfile } from "react-icons/cg";
 import { MdOutlineManageHistory } from "react-icons/md";
 import { RiLogoutBoxRLine } from "react-icons/ri";
+import { getToken, removeToken } from "../utils/storage";
 
 
 const Navbar = ({ screenName }) => {
+    const navigate = useNavigate();
     const [nav, setNav] = useState(false);
-    const [profileToken, SetProfileToken] = useState("G");
+    const [profileToken, SetProfileToken] = useState(null);
     const [dropdownOpen, setDropdownOpen] = useState(false);
+    const [profilePic, setProfilePic] = useState(null)
 
     const handleNav = () => {
         setNav(!nav)
     }
+
+    const getProfileToken = async () => {
+        const localStorageRes = getToken();
+        SetProfileToken(localStorageRes);  
+
+        const res = await fetch(`${process.env.REACT_APP_BE_URL}/api/profile/me`, { 
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${localStorageRes}`,
+                'Content-Type': 'application/json'
+            }
+        });
+    
+        const data = await res.json();
+        setProfilePic(data.avatar)
+    }
+    
+    useEffect(() => {
+        const fetchProfile = async () => {
+            await getProfileToken();
+        }
+    
+        fetchProfile();
+    }, []);
+
+    const LogOut = () => {
+        const tokenRes = removeToken()
+        console.log(tokenRes)
+        if(!tokenRes){
+            navigate('/login')
+        }
+    }
+    
 
     return (
         <div className="flex justify-between items-center h-24 mx-auto px-4 py-2 bg-custom-yellow md:px-8">
@@ -35,10 +72,10 @@ const Navbar = ({ screenName }) => {
             {profileToken ?
                 <div className="hidden md:flex">
                     <button className="items-center space-x-4">
-                        <img src={images.persona}
+                        <img src={profilePic}
                             onClick={() => setDropdownOpen(!dropdownOpen)}
                             alt="profile"
-                            className="rounded-full w-12 h-12 shrink-0 grow-0"
+                            className="rounded-full w-12 h-12 object-cover shrink-0 grow-0"
                         />
                     </button>
                     {dropdownOpen && (
@@ -58,10 +95,10 @@ const Navbar = ({ screenName }) => {
                                         <MdOutlineManageHistory size={25} />
                                         <li className="ml-2">Post history</li>
                                     </a>
-                                    <a href="/" className="px-4 py-4 hover:text-[#FF914D] flex flex-row items-center">
+                                    <button onClick={LogOut} className="px-4 py-4 hover:text-[#FF914D] flex flex-row items-center">
                                         <RiLogoutBoxRLine size={25} />
                                         <li className="ml-2"> Log out</li>
-                                    </a>
+                                    </button>
                                 </ul>
                             </div>
                         </div>
@@ -108,7 +145,7 @@ const Navbar = ({ screenName }) => {
                                 <a href='/signup'>Settings </a>
                             </li>
                             <li className="text-[#FF5757] p-4 hover:text-[#FF914D]">
-                                <a href='/signup'>Logout </a>
+                                <button onClick={LogOut} >Logout </button>
                             </li>
                         </>
                     }

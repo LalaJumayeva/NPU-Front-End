@@ -1,94 +1,19 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { FaCaretDown } from 'react-icons/fa';
 import PostCard from '../../components/PostCard';
-import { feedBackground, heroBackground } from '../../assets';
 import { IoAddCircle } from "react-icons/io5";
 import { useNavigate } from 'react-router-dom';
-
-
-const posts = [
-    {
-        id: 1,
-        author: "Anya Petrova",
-        time: "Today, Aug. 17, 11:06",
-        content: "Lorem ipsum dolor sit amet,aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum.",
-        images: [heroBackground, feedBackground],
-        name: "GearMoprh",
-        category: "Capes & Cloths",
-        likes: 35,
-    },
-    {
-        id: 2,
-        author: "Anya Petrova",
-        time: "Today, Aug. 17, 11:06",
-        content: "Lorem ipsum dolor sit amet,aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum.",
-        images: [heroBackground, heroBackground],
-        name: "GearMoprh",
-        category: "Capes & Cloths",
-        likes: 35,
-    },
-    {
-        id: 3,
-        author: "Anya Petrova",
-        time: "Today, Aug. 17, 11:06",
-        content: "Lorem ipsum dolor sit amet,aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum.",
-        images: [heroBackground, heroBackground],
-        name: "GearMoprh",
-        category: "Capes & Cloths",
-        likes: 35,
-    },
-    {
-        id: 4,
-        author: "Anya Petrova",
-        time: "Today, Aug. 17, 11:06",
-        content: "Lorem ipsum dolor sit amet,aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum.",
-        images: [heroBackground, heroBackground],
-        name: "GearMoprh",
-        category: "Capes & Cloths",
-        likes: 35,
-    },
-    {
-        id: 3,
-        author: "Anya Petrova",
-        time: "Today, Aug. 17, 11:06",
-        content: "Lorem ipsum dolor sit amet,aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum.",
-        images: [heroBackground, heroBackground],
-        name: "GearMoprh",
-        category: "Capes & Cloths",
-        likes: 35,
-    },
-    {
-        id: 4,
-        author: "Anya Petrova",
-        time: "Today, Aug. 17, 11:06",
-        content: "Lorem ipsum dolor sit amet,aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum.",
-        images: [heroBackground, heroBackground],
-        name: "GearMoprh",
-        category: "Capes & Cloths",
-        likes: 35,
-    },
-    {
-        id: 3,
-        author: "Anya Petrova",
-        time: "Today, Aug. 17, 11:06",
-        content: "Lorem ipsum dolor sit amet,aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum.",
-        images: [heroBackground, heroBackground],
-        name: "GearMoprh",
-        category: "Capes & Cloths",
-        likes: 35,
-    },
-
-];
+import { getToken } from '../../utils/storage';
 
 const NPUFeed = () => {
+    const [posts, setPosts] = useState([])
     const navigate = useNavigate();
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [selectedCategory, setSelectedCategory] = useState('All categories');
     const dropdownRef = useRef(null);
 
     const [page, setPage] = useState(1);
-    const postsPerPage = 5;
-
+    const postsPerPage = 6;
     const totalPages = Math.ceil(posts.length / postsPerPage);
 
     const lastIndexOfPost = page * postsPerPage;
@@ -96,13 +21,13 @@ const NPUFeed = () => {
 
     const postsOnCurrentPage = posts.slice(firstIndexOfPost, lastIndexOfPost);
 
+    const paginate = (pageNumber) => setPage(pageNumber);
 
-    const paginate = (pagination) => setPage(pagination)
 
     const [token, setToken] = useState(null);
 
     const addPostHandler = () => {
-        navigate(!token ? '/addpost' : '/login')
+        navigate(token ? '/addpost' : '/login')
     }
 
     useEffect(() => {
@@ -119,7 +44,24 @@ const NPUFeed = () => {
         }
     }, [dropdownOpen]);
 
-    const categories = ['Capes & Cloths', 'Fantasy', 'Animals', 'Nature', 'Technology', 'Universe', 'Kids'];
+    const categories = ['Capes and Cloths', 'Fantasy', 'Animals', 'Nature', 'Technology', 'Universe', 'Kids'];
+
+    const fetchPosts = async () => {
+        try {
+            const response = await fetch('/api/Post');
+            const data = await response.json();
+            setPosts(data);
+        } catch (error) {
+            console.error("Error fetching posts:", error);
+        }
+    };
+
+    useEffect(() => {
+        const tokenRes = getToken();
+        setToken(tokenRes)
+        fetchPosts();
+    }, []);
+
 
     return (
         <div className="h-screen">
@@ -127,15 +69,14 @@ const NPUFeed = () => {
                 <div className=" w-full md:w-[75%] lg:w-[70%] px-2 md:px-10 flex flex-col">
                     <p className='text-xl md:2xl font-bold font-karla'>NPU Feed:</p>
                     <div>
-                        <PostCard postsOnCurrentPage={postsOnCurrentPage} />
+                        <PostCard postsOnCurrentPage={postsOnCurrentPage} refreshPosts={fetchPosts} />
                     </div>
                     <div className="pagination flex justify-center mb-4 w-full md:w-[90%]">
                         {Array.from({ length: totalPages }, (_, index) => (
                             <button
                                 key={index + 1}
                                 onClick={() => paginate(index + 1)}
-                                className={`mx-1 px-2 py-0 rounded-full ${page === index + 1 ? 'bg-custom-red text-white' : 'bg-white text-gray-700'
-                                    }`}
+                                className={`mx-1 px-2 py-0 rounded-full ${page === index + 1 ? 'bg-custom-red text-white' : 'bg-white text-gray-700'}`}
                             >
                                 {index + 1}
                             </button>

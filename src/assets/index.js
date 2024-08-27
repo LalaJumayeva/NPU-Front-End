@@ -7,9 +7,9 @@ import sakura from './images/sakura.png';
 import sebastian from './images/sebastian.png';
 import elena from './images/elena.png';
 import feedBackground from './images/feedbackground.png';
-import bunny from './images/bunny.jpg'
-import dragon from './images/dragon.png'
-import placeholder from './images/placeholder.jpg'
+import bunny from './images/bunny.jpg';
+import dragon from './images/dragon.png';
+import placeholder from './images/placeholder.jpg';
 
 export {
   logo,
@@ -23,5 +23,5 @@ export {
   feedBackground,
   bunny,
   dragon,
-  placeholder
+  placeholder,
 };

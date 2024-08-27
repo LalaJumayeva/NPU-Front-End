@@ -1,9 +1,12 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import Button from "../../components/Button";
 import { exploreBackground } from "../../assets";
 import { ReactTyped } from "react-typed";
 
 const Explore = () => {
+    const navigate = useNavigate();
+
     return (
         <div className="h-[45vh] bg-[#E3E4F5] w-full flex justify-center items-center">
             <div
@@ -22,7 +25,7 @@ const Explore = () => {
                         loop
                     />
                 </div>
-                <Button buttonText="Explore" customStyle="my-4" />
+                <Button buttonText="Explore" customStyle="my-4" onClick={() => navigate('/collections')} />
             </div>
         </div>
     )

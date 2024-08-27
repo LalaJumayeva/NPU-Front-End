@@ -1,23 +1,67 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import { persona, placeholder } from "../assets";
+import { placeholder } from "../assets";
 import Button from "../components/Button";
+import { getToken } from "../utils/storage";
 
 const ProfileSettings = () => {
-    const [profileImage, setProfileImage] = useState(persona);
-    const [change, setChange] = useState(false)
+    const [profileImage, setProfileImage] = useState(null);
+    const [imageFile, setImageFile] = useState(null);
+    const [change, setChange] = useState(false);
+    const [username, setUsername] = useState("");
+    const [email, setEmail] = useState("");
+    const [token, setToken] = useState(null);
+
+    const fetchProfile = async () => {
+        const localStorageRes = getToken();
+        setToken(localStorageRes);
+        const res = await fetch(`${process.env.REACT_APP_BE_URL}/api/profile/me`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${localStorageRes}`,
+                'Content-Type': 'application/json',
+            },
+        });
+
+        const profileData = await res.json();
+        setProfileImage(profileData.avatar || placeholder);
+        setUsername(profileData.username);
+        setEmail(profileData.email);
+    };
+
+    useEffect(() => {
+        fetchProfile();
+    }, []);
 
     const handleImageChange = (e) => {
         const file = e.target.files[0];
         if (file) {
             setProfileImage(URL.createObjectURL(file));
+            setImageFile(file);
         }
     };
 
-    const saveChanges = () => {
-        setChange(true)
-    }
+    const saveChanges = async () => {
+        const formData = new FormData();
+        formData.append("username", username);
+        if (imageFile) {
+            formData.append("avatar", imageFile);
+        }
+
+        const res = await fetch(`${process.env.REACT_APP_BE_URL}/api/profile/me`, {
+            method: 'PATCH',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+            },
+            body: formData
+        });
+
+        if (res.ok) {
+            setChange(true);
+            fetchProfile();
+        }
+    };
 
     return (
         <div>
@@ -25,19 +69,11 @@ const ProfileSettings = () => {
             <div className="h-screen lg:h-[75vh] py-16 lg:py-20">
                 <div className="flex flex-col lg:flex-row justify-center items-center">
                     <div className="flex flex-col items-center justify-center lg:w-1/4">
-                        {profileImage ? (
-                            <img
-                                src={profileImage}
-                                alt="Profile Preview"
-                                className="w-48 rounded-full mx-auto mb-2"
-                            />
-                        ) : (
-                            <img
-                                src={placeholder}
-                                alt="Profile Preview"
-                                className="w-48 rounded-full mx-auto mb-2"
-                            />
-                        )}
+                        <img
+                            src={profileImage}
+                            alt="Profile Preview"
+                            className="w-48 h-48 rounded-full object-cover mx-auto mb-2"
+                        />
                         <label className="block text-center mt-3">
                             <input
                                 type="file"
@@ -59,7 +95,8 @@ const ProfileSettings = () => {
                                     type="text"
                                     className="block border border-grey-light w-full p-3 mb-4 rounded-full"
                                     name="username"
-                                    placeholder="Lala Jumayeva"
+                                    value={username}
+                                    onChange={(e) => setUsername(e.target.value)}
                                 />
                             </div>
                             <div className="w-full lg:w-[45%]">
@@ -68,7 +105,7 @@ const ProfileSettings = () => {
                                     type="text"
                                     className="block border border-grey-light w-full p-3 mb-4 rounded-full bg-gray-100 text-gray-500 cursor-not-allowed"
                                     name="email"
-                                    placeholder="cumayevalala@gmail.com"
+                                    value={email}
                                     disabled
                                 />
                                 <div className="flex justify-end items-end mt-8">
@@ -82,6 +119,6 @@ const ProfileSettings = () => {
             <Footer />
         </div>
     );
-}
+};
 
 export default ProfileSettings;

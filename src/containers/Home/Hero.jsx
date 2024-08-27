@@ -1,9 +1,12 @@
 import React from "react";
+import { useNavigate } from 'react-router-dom';
 import { heroBackground } from "../../assets";
 import SearchBar from "../../components/SearchBar";
 import Button from '../../components/Button'
 
 const Hero = () => {
+    const navigate = useNavigate();
+
     return (
         <div
             className="h-[90vh] text-white font-karla flex items-center justify-center bg-cover bg-center"
@@ -18,8 +21,13 @@ const Hero = () => {
                     <br />
                     Your creativity knows no limits—dive into a community where every piece tells a story.
                 </p>
-                <Button buttonText="Explore" animate="animate-slidein opacity-0 [--slidein-delay:700ms]" customStyle="mb-5" />
-                <div className="px-4 md:px-0">
+                <Button 
+                buttonText="Explore" 
+                animate="animate-slidein opacity-0 [--slidein-delay:700ms]" 
+                customStyle="mb-5" 
+                onClick={() => navigate('/collections')}
+                />
+                <div className="px-4 md:px-0 w-full flex justify-center items-center sm:w-[100%]">
                     <SearchBar buttonColor="bg-custom-yellow" animation="animate-slidein opacity-0 [--slidein-delay:800ms]" />
                 </div>
             </div>
