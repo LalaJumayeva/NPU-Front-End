@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { FaCaretDown } from 'react-icons/fa';
 import PostCard from '../../components/PostCard';
 import { IoAddCircle } from "react-icons/io5";
@@ -6,7 +7,10 @@ import { useNavigate } from 'react-router-dom';
 import { getToken } from '../../utils/storage';
 
 const NPUFeed = () => {
-    const [posts, setPosts] = useState([])
+    const location = useLocation();
+    const initialSearchResults = location.state?.posts || null;
+    const [posts, setPosts] = useState([]);
+    const [searchResults, setSearchResults] = useState(initialSearchResults);
     const navigate = useNavigate();
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [selectedCategory, setSelectedCategory] = useState('All categories');
@@ -14,20 +18,19 @@ const NPUFeed = () => {
 
     const [page, setPage] = useState(1);
     const postsPerPage = 6;
-    const totalPages = Math.ceil(posts.length / postsPerPage);
+    const totalPages = Math.ceil((searchResults ? searchResults.length : posts.length) / postsPerPage);
 
     const lastIndexOfPost = page * postsPerPage;
     const firstIndexOfPost = lastIndexOfPost - postsPerPage;
 
-    const postsOnCurrentPage = posts.slice(firstIndexOfPost, lastIndexOfPost);
+    const postsOnCurrentPage = searchResults ? searchResults.slice(firstIndexOfPost, lastIndexOfPost) : posts.slice(firstIndexOfPost, lastIndexOfPost);
 
     const paginate = (pageNumber) => setPage(pageNumber);
-
 
     const [token, setToken] = useState(null);
 
     const addPostHandler = () => {
-        navigate(token ? '/addpost' : '/login')
+        navigate(token ? '/addpost' : '/login');
     }
 
     useEffect(() => {
@@ -51,6 +54,8 @@ const NPUFeed = () => {
             const response = await fetch('/api/Post');
             const data = await response.json();
             setPosts(data);
+            // Reseting searchResults after refreshing
+            setSearchResults(null);
         } catch (error) {
             console.error("Error fetching posts:", error);
         }
@@ -58,15 +63,21 @@ const NPUFeed = () => {
 
     useEffect(() => {
         const tokenRes = getToken();
-        setToken(tokenRes)
+        setToken(tokenRes);
         fetchPosts();
     }, []);
 
+    useEffect(() => {
+        // Handling updates to searchResults when navigating to this page
+        if (initialSearchResults) {
+            setSearchResults(initialSearchResults);
+        }
+    }, [initialSearchResults]);
 
     return (
         <div className="h-screen">
             <div className="flex flex-row h-full px-4">
-                <div className=" w-full md:w-[75%] lg:w-[70%] px-2 md:px-10 flex flex-col">
+                <div className="w-full md:w-[75%] lg:w-[70%] px-2 md:px-10 flex flex-col">
                     <p className='text-xl md:2xl font-bold font-karla'>NPU Feed:</p>
                     <div>
                         <PostCard postsOnCurrentPage={postsOnCurrentPage} refreshPosts={fetchPosts} />

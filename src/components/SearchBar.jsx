@@ -1,14 +1,13 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { FaSearch } from 'react-icons/fa';
 
 const SearchBar = ({ buttonColor, animation }) => {
-    const [query, setQuery] = useState("")
-    const [post, setPosts] = useState([])
+    const [query, setQuery] = useState("");
+    const navigate = useNavigate();
 
     const handleSubmit = async(event) => {
         event.preventDefault();
-        console.log("query: ", query)
-
         try {
             if (query !== "") {
                 const response = await fetch(`${process.env.REACT_APP_BE_URL}/api/search?q=${query}`, {
@@ -20,10 +19,8 @@ const SearchBar = ({ buttonColor, animation }) => {
                 }
 
                 const data = await response.json()
-                setPosts(data)
+                navigate('/collections', { state: { posts: data } });
 
-
-                console.log("fetched posts: ", data)
             }
         } catch (e) {
             console.error('There was a problem with the fetch operation:', e);

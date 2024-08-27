@@ -18,7 +18,7 @@ const FilterBar = () => {
                         <p className="bg-[#282B78] px-2 py-1 text-white font-karla rounded-md text-center">mushrooms</p>
                         <p className="bg-[#282B78] px-2 py-1 text-white font-karla rounded-md text-center">magical</p>
                         <p className="bg-[#282B78] px-2 py-1 text-white font-karla rounded-md text-center">cloth</p>
-                        <p className="bg-[#282B78] px-2 py-1 text-white font-karla rounded-md text-center">dragon</p>
+                        <p className="bg-[#282B78] px-2 py-1 text-white font-karla rounded-md text-center">cherry blossom</p>
                     </div>
                 </div>
 
