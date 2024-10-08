@@ -51,7 +51,7 @@ const NPUFeed = () => {
 
     const fetchPosts = async () => {
         try {
-            const response = await fetch('/api/Post');
+            const response = await fetch(`${process.env.REACT_APP_BE_URL}/api/post`);
             const data = await response.json();
             setPosts(data);
             // Reseting searchResults after refreshing

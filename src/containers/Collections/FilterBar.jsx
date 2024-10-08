@@ -13,7 +13,7 @@ const FilterBar = () => {
                         and share your artwork by joining us!
                     </h1>
                     <SearchBar buttonColor="bg-custom-red" />
-                    <div className="grid grid-cols-4 sm:grid-cols-5 gap-2 items-center">
+                    <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 items-center">
                         <p className="font-karla">Examples:</p>
                         <p className="bg-[#282B78] px-2 py-1 text-white font-karla rounded-md text-center">mushrooms</p>
                         <p className="bg-[#282B78] px-2 py-1 text-white font-karla rounded-md text-center">magical</p>
